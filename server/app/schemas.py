@@ -44,20 +44,45 @@ class InteractionRead(InteractionCreate):
     model_config = ConfigDict(from_attributes=True)
 
 
+class InteractionSaved(BaseModel):
+    id: int
+    hcp_name: str
+    occurred_at: datetime
+    outcome: str
+    created_at: datetime
+
+class InteractionHistoryItem(BaseModel):
+    id: int
+    occurred_at: datetime
+    interaction_type: str
+    topics: str
+    outcome: str
+    sentiment: str
+
+
 class HCPProfile(BaseModel):
     id: int
     name: str
     specialty: str
     organization: str
     priority: str
+    interaction_history: list[InteractionHistoryItem] = Field(default_factory=list)
 
+
+class FollowUpRead(BaseModel):
+    id: int
+    hcp_name: str
+    due_on: date
+    purpose: str
+    next_action: str
+    status: str
 
 class MaterialRead(BaseModel):
     id: int
     name: str
     product: str
     material_type: str
-
+    topic_tags: list[str]
 
 class FollowUpCreate(BaseModel):
     hcp_name: str = Field(min_length=1, max_length=160)

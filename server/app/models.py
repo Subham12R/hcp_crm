@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -31,7 +31,11 @@ class Material(Base):
     material_type: Mapped[str] = mapped_column(String(30))
     specialties: Mapped[list[str]] = mapped_column(JSONB, default=list)
     is_approved: Mapped[bool] = mapped_column(default=True)
-
+    topic_tags: Mapped[list[str]] = mapped_column(
+        JSONB,
+        default=list,
+        server_default=text("'[]'::jsonb"),
+    )
     distributions: Mapped[list[InteractionMaterial]] = relationship(back_populates="material")
 
 
@@ -51,7 +55,6 @@ class Interaction(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-
     hcp: Mapped[HCP] = relationship(back_populates="interactions")
     distributions: Mapped[list[InteractionMaterial]] = relationship(
         back_populates="interaction", cascade="all, delete-orphan"
@@ -59,6 +62,7 @@ class Interaction(Base):
     follow_ups: Mapped[list[FollowUp]] = relationship(
         back_populates="interaction", cascade="all, delete-orphan"
     )
+    follow_up_actions: Mapped[str] = mapped_column(Text, default="")
 
 
 class InteractionMaterial(Base):
