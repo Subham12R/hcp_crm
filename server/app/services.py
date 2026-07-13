@@ -178,6 +178,8 @@ async def create_follow_up(
     if hcp is None:
         raise ValueError(f"HCP '{payload.hcp_name}' was not found")
 
+    hcp_name = hcp.name
+
     follow_up = FollowUp(
         hcp_id=hcp.id,
         due_on=payload.due_on,
@@ -195,13 +197,13 @@ async def create_follow_up(
     await session.refresh(follow_up)
     return FollowUpRead(
         id=follow_up.id,
-        hcp_name=hcp.name,
+        hcp_name=hcp_name,
         due_on=follow_up.due_on,
         purpose=follow_up.purpose,
         next_action=follow_up.next_action,
         status=follow_up.status,
     )
-
+    
 async def create_interaction(
     session: AsyncSession,
     payload: InteractionCreate,

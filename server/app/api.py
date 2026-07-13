@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from app.graph import run_agent
 from app.database import get_db
 from app.schemas import (
     FollowUpCreate,
@@ -9,6 +9,8 @@ from app.schemas import (
     InteractionCreate,
     InteractionSaved,
     MaterialRead,
+    ChatRequest,
+    ChatResponse,
 )
 from app.services import (
     create_follow_up,
@@ -19,7 +21,13 @@ from app.services import (
 
 router = APIRouter(tags=["interactions"])
 
-
+@router.post("/chat", response_model=ChatResponse)
+async def chat(
+    request: ChatRequest,
+    session: AsyncSession = Depends(get_db),
+) -> ChatResponse:
+    return await run_agent(request, session)
+    
 @router.post(
     "/interactions",
     response_model=InteractionSaved,
