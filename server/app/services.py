@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import HCP, Interaction, InteractionMaterial, Material
@@ -93,8 +93,14 @@ async def seed_demo_data(session: AsyncSession) -> None:
         raise
 
 
+def normalized_hcp_name(hcp_name: str) -> str:
+    return hcp_name.lower().replace(".", "").strip()
+
+
+def hcp_name_filter(hcp_name: str):
+    return func.lower(func.replace(HCP.name, ".", "")) == normalized_hcp_name(hcp_name)
 async def get_hcp_by_name(session: AsyncSession, hcp_name: str) -> HCP | None:
-    return await session.scalar(select(HCP).where(HCP.name == hcp_name))
+    return await session.scalar(select(HCP).where(hcp_name_filter(hcp_name)))
 
 async def get_hcp_profile(
     session: AsyncSession,
@@ -103,7 +109,7 @@ async def get_hcp_profile(
     hcp = await session.scalar(
         select(HCP)
         .options(selectinload(HCP.interactions))
-        .where(HCP.name == hcp_name)
+        .where(hcp_name_filter(hcp_name))
     )
     if hcp is None:
         raise ValueError(f"HCP '{hcp_name}' was not found")

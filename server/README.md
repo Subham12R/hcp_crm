@@ -19,15 +19,15 @@ The AI assistant uses **Groq** through LangChain and a **LangGraph** workflow to
 
 ```mermaid
 flowchart LR
-    UI[React + Redux client] -->|message + current draft| API[FastAPI /api/chat]
-    API --> AGENT[LangGraph run_agent]
-    AGENT --> MODEL[LangChain ChatGroq]
-    MODEL -->|tool call| TOOLS[LangGraph ToolNode]
-    TOOLS --> SERVICES[Application services]
-    SERVICES --> ORM[Async SQLAlchemy]
-    ORM --> DB[(PostgreSQL via asyncpg)]
-    TOOLS -->|Command: draft + activity| RESPONSE[Final assistant response]
-    RESPONSE -->|message + draft_patch + tool_activity| UI
+    UI["React + Redux client"] -->|"message + current draft"| API["FastAPI /api/chat"]
+    API --> AGENT["LangGraph run_agent"]
+    AGENT --> MODEL["LangChain ChatGroq"]
+    MODEL -->|"tool call"| TOOLS["LangGraph ToolNode"]
+    TOOLS --> SERVICES["Application services"]
+    SERVICES --> ORM["Async SQLAlchemy"]
+    ORM --> DB[("PostgreSQL via asyncpg")]
+    TOOLS -->|"Command: draft + activity"| RESPONSE["Final assistant response"]
+    RESPONSE -->|"message + draft_patch + tool_activity"| UI
 ```
 
 ## LangGraph tool-calling workflow
@@ -63,11 +63,11 @@ The graph deliberately permits **one tool per user message**. The final response
 
 ```mermaid
 sequenceDiagram
-    participant Rep as Field representative
-    participant UI as React/Redux
-    participant API as FastAPI
-    participant Graph as LangGraph
-    participant DB as PostgreSQL
+    participant Rep as "Field representative"
+    participant UI as "React / Redux"
+    participant API as "FastAPI"
+    participant Graph as "LangGraph"
+    participant DB as "PostgreSQL"
 
     Rep->>UI: "Met Dr. Smith and discussed Product X efficacy"
     UI->>API: message + current interaction draft

@@ -26,7 +26,10 @@ async def chat(
     request: ChatRequest,
     session: AsyncSession = Depends(get_db),
 ) -> ChatResponse:
-    return await run_agent(request, session)
+    try:
+        return await run_agent(request, session)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     
 @router.post(
     "/interactions",
